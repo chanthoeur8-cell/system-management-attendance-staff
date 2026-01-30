@@ -3,222 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមាន និងបុគ្គលិកឆ្នើម</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងវត្តមាន និងចំណាត់ថ្នាក់បុគ្គលិក</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #2563eb;
-            --gold: #fbbf24;
+            --excellent: #10b981;
+            --good: #f59e0b;
+            --late: #ef4444;
             --dark: #1e293b;
-            --light: #f8fafc;
         }
 
-        body {
-            font-family: 'Kantumruy Pro', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container { max-width: 1000px; margin: auto; }
-
-        /* --- Hall of Fame Section --- */
-        .top-performers {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
+        body { font-family: 'Kantumruy Pro', sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        .header-section { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* Groups Styling */
+        .group-title { margin-top: 40px; padding-left: 15px; border-left: 5px solid; font-size: 1.2rem; }
+        .grid-container { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
 
         .staff-card {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 160px;
-            position: relative;
-            border: 2px solid transparent;
+            background: white; width: 150px; padding: 15px; border-radius: 12px;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: 0.3s; position: relative;
         }
 
-        .staff-card.rank-1 { border-color: var(--gold); transform: scale(1.1); z-index: 2; }
-        .staff-card .rank-tag {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--gold);
-            color: white;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #ddd;
-            margin: 10px auto;
-            overflow: hidden;
-            border: 3px solid #eee;
-        }
-
+        .avatar { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 10px; overflow: hidden; border: 3px solid #eee; }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .name { font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .count-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; color: white; }
 
-        .staff-name { font-weight: bold; display: block; margin-top: 5px; font-size: 0.9rem; }
-        .staff-role { font-size: 0.75rem; color: #666; }
+        /* Specific Colors */
+        .excellent-border { border-left-color: var(--excellent); color: var(--excellent); }
+        .good-border { border-left-color: var(--good); color: var(--good); }
+        .late-border { border-left-color: var(--late); color: var(--late); }
 
-        /* --- Input Section --- */
-        .input-box {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+        .bg-excellent { background: var(--excellent); }
+        .bg-good { background: var(--good); }
+        .bg-late { background: var(--late); }
 
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        input, select, button {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: 'Kantumruy Pro';
-        }
-
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        button:hover { background: #1d4ed8; }
-
-        /* --- Table Section --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th { background: var(--dark); color: white; padding: 15px; text-align: left; }
-        td { padding: 12px 15px; border-bottom: 1px solid #eee; }
-
+        input[type="file"] { margin: 15px 0; padding: 10px; background: #e2e8f0; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center;">🏆 បុគ្គលិកឆ្នើមប្រចាំសប្តាហ៍ (Top 5)</h2>
-    
-    <div class="top-performers" id="leaderboard">
-        <div class="staff-card rank-1">
-            <div class="rank-tag">លេខ ១</div>
-            <div class="avatar"><img src="https://i.ibb.co/7J8p21fw/photo-2025-12-15-07-43-40.jpg" alt="Profile"></div>
-            <span class="staff-name">អឿន កាណាល់</span>
-            <span class="staff-role">គ្រូថ្នាក់ទី២</span>
-        </div>
-        <div class="staff-card">
-            <div class="rank-tag" style="background: #94a3b8;">លេខ ២</div>
-            <div class="avatar"><img src="https://i.ibb.co/rKqgvV3m/photo-2026-01-30-16-01-39.jpg" alt="Profile"></div>
-            <span class="staff-name">វិន សេរីភាព</span>
-            <span class="staff-role">មធ្យមសិក្សា</span>
-        </div>
-        <div class="staff-card">
-            <div class="rank-tag" style="background: #cd7f32;">លេខ ៣</div>
-            <div class="avatar"><img src="https://i.ibb.co/jZjBRVty/photo-2026-01-30-16-00-44.jpg" alt="Profile"></div>
-            <span class="staff-name">ប៉ូ សូឌិន</span>
-            <span class="staff-role">រដ្ឋបាល</span>
-        </div>
-        <div class="staff-card">
-            <div class="rank-tag" style="background: #64748b;">លេខ ៤</div>
-            <div class="avatar"><img src="https://i.ibb.co/jPXjkQqX/IMG-3661788888.jpg" alt="Profile"></div>
-            <span class="staff-name">លីហង្ស</span>
-            <span class="staff-role">គ្រូថ្នាក់ទី១</span>
-        </div>
-        <div class="staff-card">
-            <div class="rank-tag" style="background: #64748b;">លេខ ៥</div>
-            <div class="avatar"><img src="https://i.ibb.co/B51kP9yQ/IMG-0054.png" alt="Profile"></div>
-            <span class="staff-name">ស្រីនីន</span>
-            <span class="staff-role">អ្នកផ្ដល់ព័ត៌មាន</span>
-        </div>
+    <div class="header-section">
+        <h2>🏆 ប្រព័ន្ធវាយតម្លៃវត្តមានបុគ្គលិកប្រចាំសប្តាហ៍</h2>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+        <p style="font-size: 0.9rem; color: #64748b;">សូមបញ្ចូល File STAFF.xlsx ដើម្បីមើលចំណាត់ថ្នាក់តាមក្រុម</p>
     </div>
 
-    <hr>
+    <div id="results" style="display:none;">
+        <h3 class="group-title excellent-border">🌟 ក្រុមមកមុនម៉ោង ៧:០០ (មេដាយមាស)</h3>
+        <div class="grid-container" id="groupExcellent"></div>
 
-    <div class="input-box">
-        <h3>📍 បញ្ចូលវត្តមានបុគ្គលិក</h3>
-        <div class="grid-inputs">
-            <input type="text" id="staffName" placeholder="ឈ្មោះបុគ្គលិក">
-            <select id="role">
-                <option value="គ្រូបង្រៀន">គ្រូបង្រៀន</option>
-                <option value="រដ្ឋបាល">រដ្ឋបាល</option>
-                <option value="ព័ត៌មាន">ព័ត៌មាន</option>
-               ​​ <option value="IT">IT</option>
-            </select>
-            <input type="time" id="checkin">
-            <input type="time" id="checkout">
-            <button onclick="addAttendance()">រក្សាទុកទិន្នន័យ</button>
-        </div>
+        <h3 class="group-title good-border">✅ ក្រុមមកចន្លោះម៉ោង ៧:០០ - ៧:០៥ (មេដាយប្រាក់)</h3>
+        <div class="grid-container" id="groupGood"></div>
+
+        <h3 class="group-title late-border">⏰ ក្រុមមកក្រោយម៉ោង ៧:០៥ (យឺត)</h3>
+        <div class="grid-container" id="groupLate"></div>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ឈ្មោះ</th>
-                <th>តួនាទី</th>
-                <th>ម៉ោងចូល</th>
-                <th>ម៉ោងចេញ</th>
-                <th>ស្ថានភាព</th>
-            </tr>
-        </thead>
-        <tbody id="attendanceBody">
-            </tbody>
-    </table>
 </div>
 
 <script>
-    function addAttendance() {
-        const name = document.getElementById('staffName').value;
-        const role = document.getElementById('role').value;
-        const checkin = document.getElementById('checkin').value;
-        const checkout = document.getElementById('checkout').value;
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+            processData(rows);
+        };
+        reader.readAsArrayBuffer(file);
+    });
 
-        if(!name || !checkin) {
-            alert("សូមបញ្ចូលឈ្មោះ និងម៉ោងចូល!");
-            return;
+    function processData(rows) {
+        let results = [];
+        // ចាប់ផ្ដើមអានពីជួរទី ៨ (index 7) ដូចក្នុង File របស់អ្នក
+        for (let i = 7; i < rows.length; i++) {
+            let row = rows[i];
+            let name = row[2]; // Column C: Name
+            if (!name) continue;
+
+            let cat1 = 0, cat2 = 0, cat3 = 0;
+            // Column ម៉ោងចូល: G, I, K, M, O (index 6, 8, 10, 12, 14)
+            [6, 8, 10, 12, 14].forEach(colIdx => {
+                let time = row[colIdx];
+                if (time && time !== 'P' && time !== 'A') {
+                    let totalMinutes = parseTimeToMinutes(time);
+                    if (totalMinutes <= 420) cat1++; // 7:00 AM
+                    else if (totalMinutes <= 425) cat2++; // 7:05 AM
+                    else cat3++;
+                }
+            });
+
+            results.push({ name, cat1, cat2, cat3 });
         }
+        renderGroups(results);
+    }
 
-        // កំណត់ស្ថានភាព (យឺត ឬ ទាន់ពេល)
-        const status = checkin <= "07:00" ? 
-            '<span style="color:green">ទាន់ពេល</span>' : 
-            '<span style="color:red">យឺត</span>';
+    function parseTimeToMinutes(timeStr) {
+        try {
+            // បំបែកម៉ោងពីទម្រង់ "7:04:51 AM"
+            let [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            let h = parseInt(hours);
+            let m = parseInt(minutes);
+            if (modifier === 'PM' && h < 12) h += 12;
+            if (modifier === 'AM' && h === 12) h = 0;
+            return h * 60 + m;
+        } catch (e) { return 999; }
+    }
 
-        const table = document.getElementById('attendanceBody');
-        const row = `<tr>
-            <td><strong>${name}</strong></td>
-            <td>${role}</td>
-            <td>${checkin}</td>
-            <td>${checkout || '-:-'}</td>
-            <td>${status}</td>
-        </tr>`;
-        
-        table.innerHTML += row;
+    function renderGroups(data) {
+        document.getElementById('results').style.display = 'block';
+        const gEx = document.getElementById('groupExcellent');
+        const gGo = document.getElementById('groupGood');
+        const gLa = document.getElementById('groupLate');
 
-        // Reset inputs
-        document.getElementById('staffName').value = '';
+        gEx.innerHTML = ""; gGo.innerHTML = ""; gLa.innerHTML = "";
+
+        data.forEach(staff => {
+            let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.name)}&background=random&size=128`;
+            
+            // បង្កើត Card សម្រាប់ម្នាក់ៗ
+            const createCard = (count, bgClass, label) => `
+                <div class="staff-card">
+                    <div class="avatar"><img src="${avatarUrl}"></div>
+                    <span class="name">${staff.name}</span>
+                    <span class="count-badge ${bgClass}">${count} ថ្ងៃ (${label})</span>
+                </div>
+            `;
+
+            if (staff.cat1 > 0) gEx.innerHTML += createCard(staff.cat1, 'bg-excellent', 'មុន 7:00');
+            if (staff.cat2 > 0) gGo.innerHTML += createCard(staff.cat2, 'bg-good', 'មុន 7:05');
+            if (staff.cat3 > 0) gLa.innerHTML += createCard(staff.cat3, 'bg-late', 'ក្រោយ 7:05');
+        });
     }
 </script>
 
